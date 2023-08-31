@@ -46,6 +46,18 @@ export class Aurora extends Construct {
             removalPolicy: cdk.RemovalPolicy.DESTROY,
         });
 
+        const clusterSecret = cluster.secret!
+        const dbname = clusterSecret.secretValueFromJson('dbname').unsafeUnwrap();
+        const host = clusterSecret.secretValueFromJson('host').unsafeUnwrap();
+        const username = clusterSecret.secretValueFromJson('username').unsafeUnwrap();
+        const password = clusterSecret.secretValueFromJson('password').unsafeUnwrap();
+        const port = clusterSecret.secretValueFromJson('port').unsafeUnwrap();
+        const databaseUrl = `postgresql://${username}:${password}@${host}:${port}/${dbname}`;
+        // databaseUrl をシークレットとして登録
+        this.secret = new Secret(this, 'DatabaseUrlSecret', {
+            secretStringValue: cdk.SecretValue.unsafePlainText(databaseUrl),
+        });
+
         // 現時点ではL2クラスがServerless V2未対応のため、L1クラスから書き換え
         const cfnCluster = cluster.node.defaultChild as CfnDBCluster;
         cfnCluster.addPropertyOverride('ServerlessV2ScalingConfiguration', {
@@ -54,7 +66,7 @@ export class Aurora extends Construct {
         });
         cfnCluster.addPropertyDeletionOverride('EngineMode');
 
-　       // 指定したインスタンスIDプレフィクスを持つノードを抽出してインスタンスインスタンスクラスを書き換える
+        // 指定したインスタンスIDプレフィクスを持つノードを抽出してインスタンスインスタンスクラスを書き換える
         const children = cluster.node.children;
         for (const child of children) {
             if (child.node.id.startsWith(instanceIdPrefix)) {

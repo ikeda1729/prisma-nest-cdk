@@ -1,31 +1,13 @@
-# Common build stage
-FROM node:14.14.0-alpine3.12 as common-build-stage
+FROM node:18-alpine as production-build-stage
 
-COPY . ./app
+# Create app directory
+WORKDIR /usr/src/app
 
-WORKDIR /app
+COPY package*.json ./
 
 RUN npm install
-
+COPY . . 
 EXPOSE 3000
 
-# Development build stage
-FROM common-build-stage as development-build-stage
-
-ENV NODE_ENV development
-
-CMD ["npm", "run", "dev"]
-
-# Production build stage
-FROM common-build-stage as production-build-stage
-
-ENV NODE_ENV production
-ENV OTEL_SERVICE_NAME='sampleApp'
-
-COPY entrypoint.sh /
-RUN apk add --no-cache jq && \
-  chmod +x /entrypoint.sh && \
-  chmod +x /app/getsecretvalue.js
-
-ENTRYPOINT [ "/entrypoint.sh" ]
-CMD ["npm", "run", "start"]
+RUN npx prisma generate
+CMD [ "npm", "run", "dev" ]

@@ -78,7 +78,7 @@ export class AppRunnerService extends Construct {
                 imageConfiguration: {
                     port: 3000,
                     environment: {
-                        "DB_SECRET_NAME": props.dbSecret.secretName,
+                        "DATABASE_URL": props.dbSecret.secretValue.unsafeUnwrap()
                     }
                 }
             }),
