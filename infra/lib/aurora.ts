@@ -3,10 +3,12 @@ import { InstanceClass, InstanceSize, InstanceType, SecurityGroup, Vpc } from 'a
 import { AuroraPostgresEngineVersion, CfnDBCluster, CfnDBInstance, Credentials, DatabaseCluster, DatabaseClusterEngine, DatabaseInstance, ServerlessCluster } from 'aws-cdk-lib/aws-rds';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct, IConstruct } from 'constructs';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 interface AuroraProps {
     vpc: Vpc,
     sgDatabase: SecurityGroup,
+    ec2DB: ec2.Instance,
 }
 
 export class Aurora extends Construct {
@@ -45,6 +47,8 @@ export class Aurora extends Construct {
             },
             removalPolicy: cdk.RemovalPolicy.DESTROY,
         });
+        // ec2からの接続を許可
+        cluster.connections.allowFrom(props.ec2DB, ec2.Port.tcp(5432));
 
         const clusterSecret = cluster.secret!
         const dbname = clusterSecret.secretValueFromJson('dbname').unsafeUnwrap();
