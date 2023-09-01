@@ -1,4 +1,4 @@
-import { Service, Source, VpcConnector } from '@aws-cdk/aws-apprunner-alpha';
+import { Service, Source, VpcConnector, Secret as SecretAppRunner } from '@aws-cdk/aws-apprunner-alpha';
 import { CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { CfnObservabilityConfiguration, CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
@@ -9,11 +9,12 @@ import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { DockerImageName, ECRDeployment } from 'cdk-ecr-deployment';
 import { Construct } from 'constructs';
 import * as path from "path";
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
 type AppStackProps = {
     vpc: Vpc,
     sgAppRunner: SecurityGroup,
-    dbSecret: Secret,
+    secretDbUrl: Secret,
 }
 
 export class AppRunnerService extends Construct {
@@ -64,7 +65,7 @@ export class AppRunnerService extends Construct {
                                 "secretsmanager:ListSecretVersionIds"
                             ],
                             resources: [
-                                `arn:aws:secretsmanager:${(scope as Stack).region}:${(scope as Stack).account}:secret:${props.dbSecret.secretName}-*`
+                                `arn:aws:secretsmanager:${(scope as Stack).region}:${(scope as Stack).account}:secret:${props.secretDbUrl.secretName}-*`
                             ]
                         })
                     ]
@@ -77,9 +78,6 @@ export class AppRunnerService extends Construct {
                 repository: repo,
                 imageConfiguration: {
                     port: 3000,
-                    environment: {
-                        "DATABASE_URL": props.dbSecret.secretValue.unsafeUnwrap()
-                    }
                 }
             }),
             serviceName: 'sampleApp',
@@ -87,6 +85,7 @@ export class AppRunnerService extends Construct {
             instanceRole: instanceRole,
         });
         service.applyRemovalPolicy(RemovalPolicy.DESTROY);
+        service.addSecret('DATABASE_URL', SecretAppRunner.fromSecretsManager(props.secretDbUrl));
 
         // トレースの有効化
         const cfnObservabilityConfig = new CfnObservabilityConfiguration(this, 'SampleAppRunnerObservConfig', {

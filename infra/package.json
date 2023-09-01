@@ -11,7 +11,7 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@aws-cdk/aws-apprunner-alpha": "^2.46.0-alpha.0",
+    "@aws-cdk/aws-apprunner-alpha": "^2.93.0-alpha.0",
     "@types/jest": "^27.5.2",
     "@types/node": "10.17.27",
     "@types/prettier": "2.6.0",
@@ -23,7 +23,7 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "aws-cdk-lib": "2.46.0",
+    "aws-cdk-lib": "^2.46.0",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"
   }

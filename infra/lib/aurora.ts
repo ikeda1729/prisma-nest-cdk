@@ -13,6 +13,7 @@ interface AuroraProps {
 
 export class Aurora extends Construct {
     readonly secret: Secret;
+    readonly secretDbUrl: Secret;
 
     constructor(scope: Construct, id: string, props: AuroraProps) {
         super(scope, id);
@@ -58,7 +59,7 @@ export class Aurora extends Construct {
         const port = clusterSecret.secretValueFromJson('port').unsafeUnwrap();
         const databaseUrl = `postgresql://${username}:${password}@${host}:${port}/${dbname}`;
         // databaseUrl をシークレットとして登録
-        this.secret = new Secret(this, 'DatabaseUrlSecret', {
+        this.secretDbUrl = new Secret(this, 'DatabaseUrlSecret', {
             secretStringValue: cdk.SecretValue.unsafePlainText(databaseUrl),
         });
 

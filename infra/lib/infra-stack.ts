@@ -24,7 +24,7 @@ export class InfraStack extends cdk.Stack {
     const app = new AppRunnerService(this, 'AppStack', {
       vpc: this.network.vpc,
       sgAppRunner: this.network.sgAppRunner,
-      dbSecret: this.aurora.secret,
+      secretDbUrl: this.aurora.secretDbUrl,
     });
 
     app.node.addDependency(this.aurora);
