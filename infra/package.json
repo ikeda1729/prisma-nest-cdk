@@ -18,6 +18,7 @@
     "aws-cdk": "2.46.0",
     "cdk-ecr-deployment": "^2.5.6",
     "jest": "^27.5.1",
+    "prettier": "^3.0.3",
     "ts-jest": "^27.1.4",
     "ts-node": "^10.9.1",
     "typescript": "~3.9.7"
