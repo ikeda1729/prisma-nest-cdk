@@ -7,6 +7,7 @@ import { Construct, IConstruct } from 'constructs';
 interface AuroraProps {
     vpc: Vpc,
     sgDatabase: SecurityGroup,
+    rdsSG: SecurityGroup
 }
 
 export class Aurora extends Construct {
@@ -40,7 +41,7 @@ export class Aurora extends Construct {
             instanceProps: {
                 vpc: props.vpc,
                 vpcSubnets: props.vpc.selectSubnets({ subnetGroupName: 'db' }),
-                securityGroups: [props.sgDatabase],
+                securityGroups: [props.sgDatabase, props.rdsSG],
                 instanceType: InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.MEDIUM), // 後でインスタンスクラスを書き換えるため、ダミーを設定
             },
             removalPolicy: cdk.RemovalPolicy.DESTROY,
