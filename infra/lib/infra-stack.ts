@@ -17,7 +17,6 @@ export class InfraStack extends cdk.Stack {
     this.aurora = new Aurora(this, 'AuroraCluster', {
       vpc: this.network.vpc,
       sgDatabase: this.network.sgDataBase,
-      rdsSG: this.network.rdsSG,
     });
 
     // App Runner Service
