@@ -1,6 +1,9 @@
 # App Runner CDK sample
 Keyword: Nest.js, Prisma, App Runner, RDS, Aurora Postgres, VPC connector.
 
+The repo of this article (in Japanese )
+https://zenn.dev/yusuke_ikeda/articles/34bd37ac51cfc9
+
 Deploy a Nest.js + Prisma app with CDK, using App Runner.
 
 To deploy.
